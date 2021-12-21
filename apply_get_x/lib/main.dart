@@ -1,3 +1,4 @@
+import 'package:apply_get_x/route/RoutePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +7,10 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp();
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: RoutePage.DEFAULT_SCREEN,
+      getPages: RoutePage.getPageList,
+    );
   }
 }
