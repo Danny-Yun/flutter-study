@@ -19,7 +19,13 @@ class _DefaultScreenState extends State<DefaultScreen> {
           child: Text("Page move to A"),
           onPressed: () {
             print('페이지 이동 - A');
-            Get.toNamed(RoutePage.PAGE_A);
+            // RoutePage.movePage(RoutePage.PAGE_A);
+            // Get.toNamed(RoutePage.PAGE_A);
+
+            // 다트에서는 map의 타입을 따로 지정하지 않아도 됨
+            Map argument = {"age": 30};
+
+            RoutePage.movePageWithArgumment(RoutePage.PAGE_A, argument);
           },
         ),
       ),

@@ -7,6 +7,14 @@ class RoutePage {
   static const String DEFAULT_SCREEN = "/default_screen";
   static const String PAGE_A = "/page_a";
 
+  static movePage(String pageName) => Get.toNamed(pageName);
+
+  // 데이터와 함께 이동할 때
+  static movePageWithArgumment(String pageName, dynamic argument) {
+    print(argument);
+    Get.toNamed(pageName, arguments: argument);
+  }
+
   static final List<GetPage> getPageList = [
     GetPage(
       name: DEFAULT_SCREEN,
