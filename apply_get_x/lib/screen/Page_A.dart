@@ -26,7 +26,7 @@ class _Page_AState extends State<Page_A> {
       appBar: AppBar(
         leading: InkWell(
           onTap: () {
-            Get.back();
+            Get.back(result: age);
           },
           child: Icon(Icons.arrow_back),
         ),

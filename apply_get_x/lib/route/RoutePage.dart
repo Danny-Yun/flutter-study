@@ -15,6 +15,12 @@ class RoutePage {
     Get.toNamed(pageName, arguments: argument);
   }
 
+  // 페이지 이동 및 데이터 전달 -> return Callback 추가
+  static Future<dynamic> movePageWithArgummentResult(
+      String pageName, dynamic argument) async {
+    return await Get.toNamed(pageName, arguments: argument);
+  }
+
   static final List<GetPage> getPageList = [
     GetPage(
       name: DEFAULT_SCREEN,
