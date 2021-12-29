@@ -44,6 +44,12 @@ class _DefaultScreenState extends State<DefaultScreen> {
                 print('result: $result');
               },
             ),
+            ElevatedButton(
+              onPressed: () {
+                RoutePage.movePage(RoutePage.LIST_VIEW_SCREEN);
+              },
+              child: Text('List View Screen'),
+            ),
           ],
         ),
       ),
