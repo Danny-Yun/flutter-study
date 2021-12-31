@@ -50,6 +50,12 @@ class _DefaultScreenState extends State<DefaultScreen> {
               },
               child: Text('List View Screen'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                RoutePage.movePage(RoutePage.UPDATE_CHECK_SCREEN);
+              },
+              child: Text('Update Check Screen'),
+            ),
           ],
         ),
       ),

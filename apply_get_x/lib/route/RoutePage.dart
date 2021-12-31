@@ -1,13 +1,16 @@
 import 'package:apply_get_x/bindings/Page_A_Controller_Binding.dart';
+import 'package:apply_get_x/bindings/UpdateCheckScreenControllerBinding.dart';
 import 'package:apply_get_x/screen/DefaultScreen.dart';
 import 'package:apply_get_x/screen/ListViewScreen.dart';
 import 'package:apply_get_x/screen/Page_A.dart';
+import 'package:apply_get_x/screen/UpdateCheckScreen.dart';
 import 'package:get/get.dart';
 
 class RoutePage {
   static const String DEFAULT_SCREEN = "/default_screen";
   static const String PAGE_A = "/page_a";
   static const String LIST_VIEW_SCREEN = "/list_view";
+  static const String UPDATE_CHECK_SCREEN = "/update_check";
 
   static movePage(String pageName) => Get.toNamed(pageName);
 
@@ -36,6 +39,12 @@ class RoutePage {
     GetPage(
       name: LIST_VIEW_SCREEN,
       page: () => ListViewScreen(),
+    ),
+    GetPage(
+      name: UPDATE_CHECK_SCREEN,
+      page: () => UpdateCheckScreen(),
+      transition: Transition.rightToLeft,
+      binding: UpdateCheckScreenControllerBinding(),
     ),
   ];
 }
