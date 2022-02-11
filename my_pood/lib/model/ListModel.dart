@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TYPE { header, item, divider, subTitle }
+enum TYPE { header, banner, item, divider, subTitle }
 
 class BaseModel {
   TYPE type;
@@ -9,6 +9,12 @@ class BaseModel {
 
 class HeaderModel extends BaseModel {
   HeaderModel(this.widget) : super(TYPE.header);
+
+  Widget widget;
+}
+
+class BannerModel extends BaseModel {
+  BannerModel(this.widget) : super(TYPE.banner);
 
   Widget widget;
 }
