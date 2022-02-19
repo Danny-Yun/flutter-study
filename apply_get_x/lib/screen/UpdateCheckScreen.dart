@@ -123,8 +123,8 @@ class _UpdateCheckScreenState extends State<UpdateCheckScreen> {
         json.decode(response.body);
     // 자주 쓰임
     List<String> holidayData = data.map<String>((e) => (e as String)).toList();
-    print(data);
-    print(holidayData);
+    print('decode - $data');
+    print('list - $holidayData');
   }
 
   Future getMetaData() async {
