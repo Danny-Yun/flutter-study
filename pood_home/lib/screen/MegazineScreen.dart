@@ -11,7 +11,11 @@ class MegazineScreen extends StatelessWidget {
     // print('magazineList - $magazineList');
     return ListView.builder(
       itemBuilder: (context, index) {
-        return CachedNetworkImage(imageUrl: magazineList[index].url.toString());
+        return CachedNetworkImage(
+          fadeInDuration: Duration(milliseconds: 500),
+          fadeOutDuration: Duration(milliseconds: 500),
+          imageUrl: magazineList[index].url.toString(),
+        );
       },
       itemCount: magazineList.length,
     );
