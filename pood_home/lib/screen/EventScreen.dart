@@ -8,7 +8,7 @@ class EventScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('eventList - ${eventList}');
+    // print('eventList - ${eventList}');
 
     return _listView(size: MediaQuery.of(context).size.width);
   }

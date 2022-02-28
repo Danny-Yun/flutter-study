@@ -1,6 +1,7 @@
 class TodayModel {
   int? idx;
   String? goodsName;
+  int? goodsPrice;
   int? discountRate;
   int? discountPrice;
   int? saleStatus;
@@ -13,6 +14,7 @@ class TodayModel {
   TodayModel({
     required this.idx,
     required this.goodsName,
+    required this.goodsPrice,
     required this.discountRate,
     required this.discountPrice,
     required this.saleStatus,
@@ -25,7 +27,7 @@ class TodayModel {
 
   @override
   String toString() {
-    return "TodayModel(idx : $idx, goodsName : $goodsName, discountRate : $discountRate, discountPrice : $discountPrice, saleStatus : $saleStatus,"
+    return "TodayModel(idx : $idx, goodsName : $goodsName, goodsPrice : $goodsPrice, discountRate : $discountRate, discountPrice : $discountPrice, saleStatus : $saleStatus,"
         "mainProduct : $mainProduct, averageRating : $averageRating, reviewCnt : $reviewCnt, mainImage : $mainImage, mainImage : $mainImage)\n";
   }
 
@@ -33,6 +35,7 @@ class TodayModel {
     return TodayModel(
       idx: json["idx"] as int?,
       goodsName: json["goodsName"] as String?,
+      goodsPrice: json["goodsPrice"] as int?,
       discountRate: json["discountRate"] as int?,
       discountPrice: json["discountPrice"] as int?,
       saleStatus: json["saleStatus"] as int?,
