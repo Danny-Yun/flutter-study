@@ -18,7 +18,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late TabController _controller;
-  List<String> tabLabel = ['탭1', '탭2', '탭3', '탭4'];
+  List<String> tabLabel = ['푸드홈', '오늘만 할인', '맞춤 스토어', '매거진'];
   int pcIdx = 1;
   bool loading = true;
 
@@ -97,8 +97,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Future _getEventData({required String url}) async {
     var response = await Dio().get(url);
     eventList = response.data.map<EventModel>((e) {
-      return EventModel.fromJson(e);
       // print('e - ${e.toString()}');
+      return EventModel.fromJson(e);
     }).toList();
 
     // print('event - $response');

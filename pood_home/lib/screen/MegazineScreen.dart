@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pood_home/model/MagazineModel.dart';
 
@@ -7,11 +8,12 @@ class MegazineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('magazineList - $magazineList');
-    return Container(
-      child: Center(
-        child: Text('메거진'),
-      ),
+    // print('magazineList - $magazineList');
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return CachedNetworkImage(imageUrl: magazineList[index].url.toString());
+      },
+      itemCount: magazineList.length,
     );
   }
 }
