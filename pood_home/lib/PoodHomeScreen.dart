@@ -46,9 +46,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child:
-              loading ? Center(child: CircularProgressIndicator()) : _body()),
+      body: SafeArea(child: _body()),
     );
   }
 
@@ -58,7 +56,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       length: tabLabel.length,
       child: Column(children: [
         _tabBar(tabLabel: tabLabel),
-        Expanded(child: _tabBarView()),
+        loading
+            ? Expanded(child: Center(child: CircularProgressIndicator()))
+            : Expanded(child: _tabBarView()),
       ]),
     );
   }

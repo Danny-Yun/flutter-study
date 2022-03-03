@@ -56,8 +56,8 @@ class TodayScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: CachedNetworkImage(
         fit: BoxFit.fitWidth,
-        fadeInDuration: Duration(seconds: 1),
-        fadeOutDuration: Duration(seconds: 1),
+        fadeInDuration: Duration(milliseconds: 500),
+        fadeOutDuration: Duration(milliseconds: 500),
         imageUrl: todayModel.mainImage.toString(),
       ),
     );

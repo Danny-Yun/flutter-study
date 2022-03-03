@@ -23,11 +23,11 @@ class EventScreen extends StatelessWidget {
           imageUrl: eventList[index].url.toString(),
           filterQuality: FilterQuality.high,
           fit: BoxFit.fitWidth,
-          fadeOutDuration: Duration(seconds: 1),
-          fadeInDuration: Duration(seconds: 2),
-          progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-            child: CircularProgressIndicator(value: downloadProgress.progress),
-          ),
+          fadeInDuration: Duration(milliseconds: 500),
+          fadeOutDuration: Duration(milliseconds: 500),
+          // progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+          //   child: CircularProgressIndicator(value: downloadProgress.progress),
+          // ),
           errorWidget: (context, url, error) => Icon(Icons.error),
         );
       },
