@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pood_home/controller/PoodHomeController.dart';
 import 'package:pood_home/model/MagazineModel.dart';
 import 'package:pood_home/model/TodayModel.dart';
+import 'package:pood_home/resource/Urls.dart';
 import 'package:pood_home/screen/CustomScreen.dart';
 import 'package:pood_home/screen/EventScreen.dart';
 import 'package:pood_home/screen/MegazineScreen.dart';
 import 'package:pood_home/screen/TodayScreen.dart';
 
+import 'model/CustomModel.dart';
 import 'model/EventModel.dart';
 
 class Home extends StatefulWidget {
@@ -19,7 +24,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late TabController _controller;
   List<String> tabLabel = ['푸드홈', '오늘만 할인', '맞춤 스토어', '매거진'];
-  int pcIdx = 1;
+
+  int pcIdx = PoodHomeController.to.pcIdx.value;
   bool loading = true;
 
   List<EventModel> eventList = [];
@@ -34,10 +40,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Future _init() async {
-    await _getEventData(url: "https://poodone.com/api/pood/main/home/$pcIdx");
-    await _getTodayData(url: "https://poodone.com/api/pood/hot-time/$pcIdx");
-    await _getMagazineData(
-        url: "https://poodone.com/api/pood/main/temp/magagin");
+    setState(() {
+      loading = true;
+    });
+    await _getEventData(url: Urls.POODHOME_EVENT + "/$pcIdx");
+    await _getTodayData(url: Urls.TODAY_DEAL + "/$pcIdx");
+    await _getMagazineData(url: Urls.MEGAZINE_DATA);
     setState(() {
       loading = false;
     });
@@ -65,18 +73,84 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   // 탭바 메뉴
   Widget _tabBar({required List<String> tabLabel}) {
-    return TabBar(
-      controller: _controller,
-      labelColor: Colors.black,
-      unselectedLabelColor: Colors.grey.shade400,
-      // 탭바 아래 막대바
-      indicatorColor: Colors.black,
-      tabs: List.generate(
-        tabLabel.length,
-        (index) => Tab(
-          text: tabLabel[index],
-        ),
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: [
+          TabBar(
+            controller: _controller,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey.shade400,
+            // 탭바 아래 막대바
+            indicatorColor: Colors.black,
+            tabs: List.generate(
+              tabLabel.length,
+              (index) => Tab(
+                text: tabLabel[index],
+              ),
+            ),
+          ),
+          _petTypeInfo(pcIdx, () async => _init()),
+        ],
       ),
+    );
+  }
+
+  // 강아지, 고양이 타입 설정
+  Widget _petTypeInfo(int pcIdx, Function onTap) {
+    TextStyle styleActive =
+        TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
+    TextStyle styleUnActive = TextStyle(
+        color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.bold);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        InkWell(
+          onTap: () {
+            onTap;
+          },
+          child: Text(
+            "강아지",
+            style: pcIdx == 1 ? styleActive : styleUnActive,
+          ),
+        ),
+        _switch(),
+        InkWell(
+          onTap: () {
+            onTap;
+          },
+          child: Text(
+            "고양이",
+            style: pcIdx == 2 ? styleActive : styleUnActive,
+          ),
+        ),
+        SizedBox(
+          width: 15,
+        )
+      ],
+    );
+  }
+
+  // 강아지, 고양이 스위치
+  Widget _switch() {
+    return Switch(
+      inactiveTrackColor: Colors.blue,
+      inactiveThumbColor: Colors.blueAccent.shade100,
+      activeTrackColor: Colors.blue,
+      activeColor: Colors.blueAccent.shade100,
+      value: pcIdx == 2 ? true : false,
+      onChanged: (value) {
+        setState(() {
+          if (value) {
+            pcIdx = 2;
+          } else {
+            pcIdx = 1;
+          }
+        });
+        _init();
+        // print('pcIdx - $pcIdx');
+        // print('value - $value');
+      },
     );
   }
 
@@ -130,4 +204,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     // print('magazine - $response');
   }
+
+  static const headerToken = "token";
+  static const headerUuid = "useruuid";
+
+  Dio dio = Dio(
+    BaseOptions(
+      validateStatus: (status) {
+        return status! < 500;
+      },
+      connectTimeout: 10000,
+      receiveTimeout: 3000,
+      headers: {
+        'Content-Type': Headers.jsonContentType,
+        headerToken: "",
+        headerUuid: ""
+      },
+    ),
+  );
 }

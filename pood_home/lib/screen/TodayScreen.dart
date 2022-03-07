@@ -21,11 +21,14 @@ class TodayScreen extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: todayList.length,
-      itemBuilder: (_, index) => _listItem(todayModel: todayList[index]),
+      itemBuilder: (context, index) => _listItem(
+        todayModel: todayList[index],
+        size: MediaQuery.of(context).size.width,
+      ),
     );
   }
 
-  Widget _listItem({required TodayModel todayModel}) {
+  Widget _listItem({required TodayModel todayModel, required double size}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
@@ -33,7 +36,7 @@ class TodayScreen extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           // 이미지
-          _image(todayModel: todayModel),
+          _image(todayModel: todayModel, size: size),
           SizedBox(height: 10),
           // 상품명
           Text(
@@ -51,11 +54,13 @@ class TodayScreen extends StatelessWidget {
   }
 
   // 이미지
-  Widget _image({required TodayModel todayModel}) {
+  Widget _image({required TodayModel todayModel, required double size}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: CachedNetworkImage(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.cover,
+        width: size,
+        height: 280,
         fadeInDuration: Duration(milliseconds: 500),
         fadeOutDuration: Duration(milliseconds: 500),
         imageUrl: todayModel.mainImage.toString(),
