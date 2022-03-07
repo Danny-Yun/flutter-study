@@ -143,13 +143,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         setState(() {
           if (value) {
             pcIdx = 2;
+            PoodHomeController.to.changeIdx();
           } else {
             pcIdx = 1;
+            PoodHomeController.to.changeIdx();
           }
         });
         _init();
-        // print('pcIdx - $pcIdx');
-        // print('value - $value');
+        print('pcIdx - $pcIdx');
+        print('value - $value');
       },
     );
   }
