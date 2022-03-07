@@ -42,9 +42,11 @@ class _CustomScreenState extends State<CustomScreen> {
     // print('snackList - $snackList');
     // print('nutrientsList - $nutrientsList');
     // print('suppliesList - $suppliesList');
-    setState(() {
-      loading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   // 맞춤 스토어 데이터 파싱
