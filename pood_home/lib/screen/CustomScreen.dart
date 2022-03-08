@@ -51,6 +51,7 @@ class _CustomScreenState extends State<CustomScreen> {
 
   // 맞춤 스토어 데이터 파싱
   Future<List<CustomModel>> _getCustomData({required String url}) async {
+    print("커스텀 호출 : $url");
     var response = await Dio().get(url);
     return response.data.map<CustomModel>((e) {
       return CustomModel.fromJson(e);

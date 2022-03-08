@@ -46,6 +46,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     await _getEventData(url: Urls.POODHOME_EVENT + "/$pcIdx");
     await _getTodayData(url: Urls.TODAY_DEAL + "/$pcIdx");
     await _getMagazineData(url: Urls.MEGAZINE_DATA);
+    await _dioPost(
+        url:
+            "https://poodone.com/api/pood/goods?pcIdx=1&goodsCtIdx=2&goodsSubCtIdx=5&sort=recordbirth,DESC&searchText=&page=0&size=50");
     setState(() {
       loading = false;
     });
@@ -90,14 +93,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          _petTypeInfo(pcIdx, () async => _init()),
+          _petTypeInfo(() async => _init()),
         ],
       ),
     );
   }
 
   // 강아지, 고양이 타입 설정
-  Widget _petTypeInfo(int pcIdx, Function onTap) {
+  Widget _petTypeInfo(Function onTap) {
     TextStyle styleActive =
         TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
     TextStyle styleUnActive = TextStyle(
@@ -107,7 +110,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       children: [
         InkWell(
           onTap: () {
-            onTap;
+            print(pcIdx);
+            pcIdx = 1;
+            PoodHomeController.to.pcIdx.value = 1;
+            print('pcIdx - $pcIdx');
+            print('controller - ${PoodHomeController.to.pcIdx.value}');
+            _init();
           },
           child: Text(
             "강아지",
@@ -117,7 +125,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         _switch(),
         InkWell(
           onTap: () {
-            onTap;
+            print(pcIdx);
+            pcIdx = 2;
+            PoodHomeController.to.pcIdx.value = 2;
+            print('pcIdx - $pcIdx');
+            print('controller - ${PoodHomeController.to.pcIdx.value}');
+            _init();
           },
           child: Text(
             "고양이",
@@ -134,10 +147,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // 강아지, 고양이 스위치
   Widget _switch() {
     return Switch(
-      inactiveTrackColor: Colors.blue,
-      inactiveThumbColor: Colors.blueAccent.shade100,
-      activeTrackColor: Colors.blue,
-      activeColor: Colors.blueAccent.shade100,
+      inactiveTrackColor: Colors.blueAccent.shade100,
+      inactiveThumbColor: Colors.blue,
+      activeTrackColor: Colors.blueAccent.shade100,
+      activeColor: Colors.blue,
       value: pcIdx == 2 ? true : false,
       onChanged: (value) {
         setState(() {
@@ -150,8 +163,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           }
         });
         _init();
-        print('pcIdx - $pcIdx');
-        print('value - $value');
       },
     );
   }
@@ -171,6 +182,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   // 이벤트 데이터 파싱
   Future _getEventData({required String url}) async {
+    print("이벤트 호출 : $url");
     var response = await Dio().get(url);
     eventList = response.data.map<EventModel>((e) {
       // print('e - ${e.toString()}');
@@ -179,7 +191,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     // print('event - $response');
     // print('data - ${response.data}');
-    // print('eventList - ${eventList}');
+    print('eventList - ${eventList[0].idx}');
   }
 
   // 오늘만 할인 데이터 파싱
@@ -224,4 +236,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       },
     ),
   );
+
+  Future _dioPost({required String url}) async {
+    var postData = {
+      "fieldList": [
+        {"fieldKey": "position", "fieldValue": "ALL"},
+        {"fieldKey": "main_property", "fieldValue": "ALL"},
+        {"fieldKey": "unit_size", "fieldValue": "ALL"},
+        {"fieldKey": "feed_target", "fieldValue": "ALL"},
+        {"fieldKey": "life_stage", "fieldValue": "ALL"}
+      ]
+    };
+    var reponse = await dio.post(url, data: postData);
+
+    // print(reponse);
+  }
 }
