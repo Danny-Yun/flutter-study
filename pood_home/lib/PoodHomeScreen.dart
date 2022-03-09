@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pood_home/controller/PoodHomeController.dart';
@@ -11,7 +9,6 @@ import 'package:pood_home/screen/EventScreen.dart';
 import 'package:pood_home/screen/MegazineScreen.dart';
 import 'package:pood_home/screen/TodayScreen.dart';
 
-import 'model/CustomModel.dart';
 import 'model/EventModel.dart';
 
 class Home extends StatefulWidget {
@@ -46,9 +43,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     await _getEventData(url: Urls.POODHOME_EVENT + "/$pcIdx");
     await _getTodayData(url: Urls.TODAY_DEAL + "/$pcIdx");
     await _getMagazineData(url: Urls.MEGAZINE_DATA);
-    await _dioPost(
-        url:
-            "https://poodone.com/api/pood/goods?pcIdx=1&goodsCtIdx=2&goodsSubCtIdx=5&sort=recordbirth,DESC&searchText=&page=0&size=50");
     setState(() {
       loading = false;
     });
@@ -217,38 +211,5 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }).toList();
 
     // print('magazine - $response');
-  }
-
-  static const headerToken = "token";
-  static const headerUuid = "useruuid";
-
-  Dio dio = Dio(
-    BaseOptions(
-      validateStatus: (status) {
-        return status! < 500;
-      },
-      connectTimeout: 10000,
-      receiveTimeout: 3000,
-      headers: {
-        'Content-Type': Headers.jsonContentType,
-        headerToken: "",
-        headerUuid: ""
-      },
-    ),
-  );
-
-  Future _dioPost({required String url}) async {
-    var postData = {
-      "fieldList": [
-        {"fieldKey": "position", "fieldValue": "ALL"},
-        {"fieldKey": "main_property", "fieldValue": "ALL"},
-        {"fieldKey": "unit_size", "fieldValue": "ALL"},
-        {"fieldKey": "feed_target", "fieldValue": "ALL"},
-        {"fieldKey": "life_stage", "fieldValue": "ALL"}
-      ]
-    };
-    var reponse = await dio.post(url, data: postData);
-
-    // print(reponse);
   }
 }
