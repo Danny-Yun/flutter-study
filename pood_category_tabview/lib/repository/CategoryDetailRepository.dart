@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:pood_category_tabview/model/GoodsModel.dart';
 
 class CategoryDetailRepository {
   static const headerToken = "token";
   static const headerUuid = "useruuid";
 
-  // List<>
+  List<GoodsModel> feedList = [];
 
   Dio dio = Dio(
     BaseOptions(
@@ -31,6 +32,14 @@ class CategoryDetailRepository {
         {"fieldKey": "life_stage", "fieldValue": "ALL"}
       ]
     };
-    return await dio.post(url, data: postData);
+    var response = await dio.post(url, data: postData);
+
+    var feedList = response.data['content'].map<GoodsModel>((e) {
+      return GoodsModel.fromJson(e);
+    }).toList();
+    // print(response.data['content']);
+    // print(feedList);
+
+    return feedList;
   }
 }
