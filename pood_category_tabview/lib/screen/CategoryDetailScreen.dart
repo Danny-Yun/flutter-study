@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pood_category_tabview/model/GoodsModel.dart';
 import 'package:pood_category_tabview/repository/CategoryDetailRepository.dart';
 import 'package:pood_category_tabview/resource/Urls.dart';
+import 'package:pood_category_tabview/resource/span_list_view.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
   const CategoryDetailScreen({Key? key}) : super(key: key);
@@ -19,6 +22,8 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   late TabController _tabController;
   List tabLabel = ['전체', '건식사료', '습식사료', '소프트사료', '에어드라이', '자연식'];
 
+  ScrollController _scrollController = ScrollController();
+
   List<GoodsModel> allFeedList = [];
   List<GoodsModel> dryFeedList = [];
   List<GoodsModel> wetFeedList = [];
@@ -34,6 +39,9 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   }
 
   Future _init() async {
+    setState(() {
+      loadData = false;
+    });
     allFeedList = await categoryDetailRepository!
         .getData(url: Urls.BASE_URL + Urls.ALL_FEED);
     dryFeedList = await categoryDetailRepository!
@@ -47,6 +55,9 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
     naturalFeedList = await categoryDetailRepository!
         .getData(url: Urls.BASE_URL + Urls.NATURAL_FEED);
 
+    setState(() {
+      loadData = true;
+    });
     // print('all - $allFeedList');
     // print('dry - $dryFeedList');
     // print('wet - $wetFeedList');
@@ -149,24 +160,147 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   // 탭바 뷰
   Widget _tabBarView() {
     return Expanded(
-      child: TabBarView(
-        controller: _tabController,
+      child: loadData
+          ? TabBarView(
+              controller: _tabController,
+              children: [
+                _tabBarViewScreen(feedList: allFeedList),
+                _tabBarViewScreen(feedList: dryFeedList),
+                _tabBarViewScreen(feedList: wetFeedList),
+                _tabBarViewScreen(feedList: softFeedList),
+                _tabBarViewScreen(feedList: airDryFeedList),
+                // _tabBarViewScreen(feedList: naturalFeedList),
+                Center(child: Text('상품이 준비중입니다.')),
+              ],
+            )
+          : Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _tabBarViewScreen({required List<GoodsModel> feedList}) {
+    if (feedList == null) {
+      return Center(child: Text('상품이 준비중입니다.'));
+    }
+    return SpanListView(
+      itemCount: feedList.length,
+      span: 2,
+      lineVerticalAxisAlignment: CrossAxisAlignment.start,
+      separatorWidget: const SizedBox(height: 8),
+      usePercentFetchData: true,
+      widgetBuilder: (index) {
+        return GestureDetector(
+          child: _item(
+              goodsModel: feedList[index],
+              index: index,
+              size: MediaQuery.of(context).size.width),
+          onTap: () {
+            print("index : $index");
+          },
+        );
+      },
+    );
+  }
+
+  Widget _item({
+    required GoodsModel goodsModel,
+    required int index,
+    required double size,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(child: Center(child: Text('1'))),
-          Container(child: Center(child: Text('2'))),
-          Container(child: Center(child: Text('3'))),
-          Container(child: Center(child: Text('4'))),
-          Container(child: Center(child: Text('5'))),
-          Container(child: Center(child: Text('6'))),
+          _image(goodsModel: goodsModel, size: size),
+          SizedBox(height: 8),
+          _goodsName(goodsModel: goodsModel),
+          SizedBox(height: 4),
+          _discount(goodsModel: goodsModel),
+          SizedBox(height: 4),
+          _review(goodsModel: goodsModel),
         ],
       ),
     );
   }
 
-  Widget _tabBarViewScreen({required List<GoodsModel> feedList}) {
-    return ListView.builder(
-      itemCount: feedList.length,
-      itemBuilder: (context, index) {},
+  // 이미지
+  Widget _image({required GoodsModel goodsModel, required double size}) {
+    if (goodsModel.mainImage == null) {
+      return SizedBox();
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: CachedNetworkImage(
+        width: size / 2.3,
+        height: 200,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        fadeInDuration: Duration(milliseconds: 500),
+        fadeOutDuration: Duration(milliseconds: 500),
+        imageUrl: goodsModel.mainImage.toString(),
+      ),
     );
+  }
+
+  // 상품명
+  Widget _goodsName({required GoodsModel goodsModel}) {
+    return Text(
+      goodsModel.goodsName.toString(),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    );
+  }
+
+  // 할인율, 할인 가격
+  Widget _discount({required GoodsModel goodsModel}) {
+    var format = NumberFormat("###,###,###,###");
+    String price = format.format(goodsModel.goodsPrice);
+
+    return Row(
+      children: [
+        if (goodsModel.discountRate != null) ...[
+          Text(
+            "${goodsModel.discountRate.toString()}%",
+            style: TextStyle(
+                color: Colors.blue, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+        SizedBox(width: 7),
+        Text(
+          price,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  // 리뷰 정보
+  Widget _review({required GoodsModel goodsModel}) {
+    if (goodsModel.reviewCnt != null && goodsModel.reviewCnt! > 0) {
+      return Row(
+        children: [
+          Icon(
+            Icons.star,
+            size: 18,
+            color: Colors.blue,
+          ),
+          Text(
+            goodsModel.averageRating.toString(),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          SizedBox(width: 5),
+          Text(
+            "리뷰 ${goodsModel.reviewCnt.toString()}",
+            style: TextStyle(color: Colors.black.withOpacity(0.5)),
+          ),
+        ],
+      );
+    } else {
+      return SizedBox();
+    }
   }
 }

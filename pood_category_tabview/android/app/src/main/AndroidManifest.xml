@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pood_category_tabview">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="pood_category_tabview"
         android:name="${applicationName}"

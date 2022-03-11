@@ -35,6 +35,8 @@ dependencies:
   dio: ^4.0.4
   freezed_annotation:
   freezed:
+  cached_network_image: ^3.2.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
