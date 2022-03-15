@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:pood_category_tabview/model/GoodsModel.dart';
+import 'package:sprintf/sprintf.dart';
 
 class CategoryDetailRepository {
   static const headerToken = "token";
@@ -22,7 +23,7 @@ class CategoryDetailRepository {
     ),
   );
 
-  Future getData({required String url}) async {
+  Future getData({required String url, required int pageIdx}) async {
     var postData = {
       "fieldList": [
         {"fieldKey": "position", "fieldValue": "ALL"},
@@ -32,7 +33,9 @@ class CategoryDetailRepository {
         {"fieldKey": "life_stage", "fieldValue": "ALL"}
       ]
     };
-    var response = await dio.post(url, data: postData);
+
+    String newUrl = sprintf(url, [pageIdx]);
+    var response = await dio.post(newUrl, data: postData);
 
     var feedList = response.data['content'].map<GoodsModel>((e) {
       return GoodsModel.fromJson(e);

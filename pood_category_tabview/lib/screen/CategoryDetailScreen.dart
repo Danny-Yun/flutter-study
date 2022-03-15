@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pood_category_tabview/controller/CategoryDetailController.dart';
 import 'package:pood_category_tabview/model/GoodsModel.dart';
 import 'package:pood_category_tabview/repository/CategoryDetailRepository.dart';
 import 'package:pood_category_tabview/resource/Urls.dart';
@@ -22,7 +23,8 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   late TabController _tabController;
   List tabLabel = ['전체', '건식사료', '습식사료', '소프트사료', '에어드라이', '자연식'];
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  int pageIdx = CategoryDetailController.to.pageIdx.value;
 
   List<GoodsModel> allFeedList = [];
   List<GoodsModel> dryFeedList = [];
@@ -31,39 +33,100 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   List<GoodsModel> airDryFeedList = [];
   List<GoodsModel> naturalFeedList = [];
 
+  List<GoodsModel> newData = [];
+  int checkIndex = 0;
+
   @override
   void initState() {
     _tabController = TabController(length: tabLabel.length, vsync: this);
     _init();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent) {
+        print("New Data Call");
+        print('tabIdx - ${_tabController.index}');
+        print('checkIndex - ${checkIndex}');
+
+        if (checkIndex != _tabController.index) {
+          pageIdx = 0;
+        }
+
+        pageIdx++;
+        print('pageIdx - $pageIdx');
+        _fetchData(_tabController.index);
+
+        checkIndex = _tabController.index;
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    print('dispose');
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future _init() async {
     setState(() {
       loadData = false;
     });
+    // print('pageIdx - $pageIdx');
     allFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.ALL_FEED);
+        .getData(url: Urls.BASE_URL + Urls.ALL_FEED, pageIdx: 0);
     dryFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.DRY_FEED);
+        .getData(url: Urls.BASE_URL + Urls.DRY_FEED, pageIdx: 0);
     wetFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.WET_FEED);
+        .getData(url: Urls.BASE_URL + Urls.WET_FEED, pageIdx: 0);
     softFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.SOFT_FEED);
+        .getData(url: Urls.BASE_URL + Urls.SOFT_FEED, pageIdx: 0);
     airDryFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.AIR_DRY_FEED);
+        .getData(url: Urls.BASE_URL + Urls.AIR_DRY_FEED, pageIdx: 0);
     naturalFeedList = await categoryDetailRepository!
-        .getData(url: Urls.BASE_URL + Urls.NATURAL_FEED);
+        .getData(url: Urls.BASE_URL + Urls.NATURAL_FEED, pageIdx: 0);
 
     setState(() {
       loadData = true;
     });
-    // print('all - $allFeedList');
-    // print('dry - $dryFeedList');
-    // print('wet - $wetFeedList');
-    // print('soft - $softFeedList');
-    // print('air - $airDryFeedList');
-    // print('natural - $naturalFeedList');
+  }
+
+  Future _fetchData(int tabIdx) async {
+    if (tabIdx == 0) {
+      newData = await categoryDetailRepository!
+          .getData(url: Urls.BASE_URL + Urls.ALL_FEED, pageIdx: pageIdx);
+      print(newData);
+      allFeedList.addAll(newData);
+      setState(() {});
+    }
+    if (tabIdx == 1) {
+      newData = await categoryDetailRepository!
+          .getData(url: Urls.BASE_URL + Urls.DRY_FEED, pageIdx: pageIdx);
+      print(newData);
+      dryFeedList.addAll(newData);
+      setState(() {});
+    }
+    if (tabIdx == 2) {
+      newData = await categoryDetailRepository!
+          .getData(url: Urls.BASE_URL + Urls.WET_FEED, pageIdx: pageIdx);
+      print(newData);
+      wetFeedList.addAll(newData);
+      setState(() {});
+    }
+    if (tabIdx == 3) {
+      newData = await categoryDetailRepository!
+          .getData(url: Urls.BASE_URL + Urls.SOFT_FEED, pageIdx: pageIdx);
+      print(newData);
+      softFeedList.addAll(newData);
+      setState(() {});
+    }
+    if (tabIdx == 4) {
+      newData = await categoryDetailRepository!
+          .getData(url: Urls.BASE_URL + Urls.AIR_DRY_FEED, pageIdx: pageIdx);
+      print(newData);
+      airDryFeedList.addAll(newData);
+      setState(() {});
+    }
   }
 
   @override
@@ -181,23 +244,23 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
     if (feedList == null) {
       return Center(child: Text('상품이 준비중입니다.'));
     }
-    return SpanListView(
-      itemCount: feedList.length,
-      span: 2,
-      lineVerticalAxisAlignment: CrossAxisAlignment.start,
-      separatorWidget: const SizedBox(height: 8),
-      usePercentFetchData: true,
-      widgetBuilder: (index) {
-        return GestureDetector(
-          child: _item(
-              goodsModel: feedList[index],
-              index: index,
-              size: MediaQuery.of(context).size.width),
-          onTap: () {
-            print("index : $index");
-          },
-        );
-      },
+    return SingleChildScrollView(
+      controller: _scrollController,
+      child: SpanListView(
+        itemCount: feedList.length,
+        span: 2,
+        lineVerticalAxisAlignment: CrossAxisAlignment.start,
+        separatorWidget: const SizedBox(height: 8),
+        usePercentFetchData: true,
+        widgetBuilder: (index) {
+          return GestureDetector(
+            child: _item(
+                goodsModel: feedList[index],
+                index: index,
+                size: MediaQuery.of(context).size.width),
+          );
+        },
+      ),
     );
   }
 

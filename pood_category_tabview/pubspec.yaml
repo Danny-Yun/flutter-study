@@ -37,6 +37,8 @@ dependencies:
   freezed:
   cached_network_image: ^3.2.0
   intl: ^0.17.0
+  get: ^4.6.1
+  sprintf: ^6.0.0
 
 dev_dependencies:
   flutter_test:
