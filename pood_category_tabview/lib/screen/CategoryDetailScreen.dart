@@ -35,14 +35,18 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
 
   List<GoodsModel> newData = [];
   int checkIndex = 0;
+  bool hasMore = false;
+  bool isLoading = true;
 
   @override
   void initState() {
     _tabController = TabController(length: tabLabel.length, vsync: this);
     _init();
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          hasMore) {
         print("New Data Call");
         print('tabIdx - ${_tabController.index}');
         print('checkIndex - ${checkIndex}');
@@ -53,6 +57,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
 
         pageIdx++;
         print('pageIdx - $pageIdx');
+
         _fetchData(_tabController.index);
 
         checkIndex = _tabController.index;
@@ -87,11 +92,15 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
         .getData(url: Urls.BASE_URL + Urls.NATURAL_FEED, pageIdx: 0);
 
     setState(() {
+      hasMore = true;
       loadData = true;
     });
   }
 
   Future _fetchData(int tabIdx) async {
+    setState(() {
+      isLoading = false;
+    });
     if (tabIdx == 0) {
       newData = await categoryDetailRepository!
           .getData(url: Urls.BASE_URL + Urls.ALL_FEED, pageIdx: pageIdx);
@@ -127,6 +136,10 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
       airDryFeedList.addAll(newData);
       setState(() {});
     }
+    hasMore = newData.length > 0;
+    setState(() {
+      isLoading = true;
+    });
   }
 
   @override
@@ -191,6 +204,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
         children: [
           _tabBar(),
           _tabBarView(),
+          if (!isLoading) Center(child: RefreshProgressIndicator()),
         ],
       ),
     );

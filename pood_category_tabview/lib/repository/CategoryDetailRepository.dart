@@ -23,17 +23,17 @@ class CategoryDetailRepository {
     ),
   );
 
-  Future getData({required String url, required int pageIdx}) async {
-    var postData = {
-      "fieldList": [
-        {"fieldKey": "position", "fieldValue": "ALL"},
-        {"fieldKey": "main_property", "fieldValue": "ALL"},
-        {"fieldKey": "unit_size", "fieldValue": "ALL"},
-        {"fieldKey": "feed_target", "fieldValue": "ALL"},
-        {"fieldKey": "life_stage", "fieldValue": "ALL"}
-      ]
-    };
+  var postData = {
+    "fieldList": [
+      {"fieldKey": "position", "fieldValue": "ALL"},
+      {"fieldKey": "main_property", "fieldValue": "ALL"},
+      {"fieldKey": "unit_size", "fieldValue": "ALL"},
+      {"fieldKey": "feed_target", "fieldValue": "ALL"},
+      {"fieldKey": "life_stage", "fieldValue": "ALL"}
+    ]
+  };
 
+  Future getData({required String url, required int pageIdx}) async {
     String newUrl = sprintf(url, [pageIdx]);
     var response = await dio.post(newUrl, data: postData);
 
@@ -44,5 +44,14 @@ class CategoryDetailRepository {
     // print(feedList);
 
     return feedList;
+  }
+
+  Future getTotal({required String url, required int pageIdx}) async {
+    String newUrl = sprintf(url, [pageIdx]);
+    var response = await dio.post(newUrl, data: postData);
+    var total = response.data['totalElements'];
+    print('total - $total');
+
+    return total;
   }
 }
